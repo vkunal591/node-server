@@ -23,6 +23,9 @@ const userSchema = new BaseSchema({
   mobileNo: {
     type: String,
   },
+  gst: {
+    type: String,
+  },
   streetAddress: { type: String },
   city: { type: String },
   landMark: { type: String },

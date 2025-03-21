@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { get, create, update, deleteData } from "#controllers/cart";
+import { get, create, update, deleteData } from "#controllers/subcategory";
 import { authentication } from "#middlewares/auth";
 
 const router = Router();

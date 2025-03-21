@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import BaseSchema from "#models/base";
+import { saveFile } from "#utils/uploadFile";
 
 const productSchema = new BaseSchema({
   name: { type: String, required: true },
@@ -7,10 +8,9 @@ const productSchema = new BaseSchema({
   price: { type: Number, required: true },
   stock: { type: Number, required: true },
   category: { type: mongoose.Schema.Types.ObjectId, ref: "category" },
-  subcategory: { type: String, required: true },
-  colors: { type: [String] },
-  sizes: { type: [String] },
-  images: { type: [String], required: true,file:true },
+  images: { type: String, file: true },
 });
 
+productSchema.pre("save", saveFile)
 export default mongoose.model("Product", productSchema);
+ 

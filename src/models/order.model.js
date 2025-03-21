@@ -3,7 +3,7 @@ import { saveFile } from "#utils/uploadFile";
 import mongoose from "mongoose";
 
 const orderScherma = new BaseSchema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   items: [
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },

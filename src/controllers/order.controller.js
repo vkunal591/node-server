@@ -10,6 +10,12 @@ export const get = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, data, "Record fetched successfully");
 });
 
+export const getAllWithUsers = asyncHandler(async function (req, res, _next) {
+  const data = await OrderService.getAllWithUsers();
+  const result = {result:data}
+  sendResponse(httpStatus.OK, res, result, "Orders fetched successfully with users");
+});
+
 export const create = asyncHandler(async function (req, res, _next) {
   const createdDoc = await OrderService.create(req.body);
   sendResponse(
@@ -26,7 +32,7 @@ export const update = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, updatedDoc, "Record updated successfully");
 });
 
-export const deleteData = asyncHandler(async function (req, res, _next) { 
+export const deleteData = asyncHandler(async function (req, res, _next) {
   const { id } = req.params;
   const deletedDoc = await OrderService.deleteDoc(id);
   sendResponse(httpStatus.OK, res, deletedDoc, "Record deleted successfully");
