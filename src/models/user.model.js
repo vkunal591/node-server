@@ -9,7 +9,7 @@ const userSchema = new BaseSchema({
   },
   email: {
     type: String,
-    required: true,
+    // required: true,
   },
   role: {
     type: String,
@@ -22,6 +22,7 @@ const userSchema = new BaseSchema({
   },
   mobileNo: {
     type: String,
+    require:true
   },
   gst: {
     type: String,

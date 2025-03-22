@@ -10,7 +10,7 @@ class UserService extends Service {
 
   static async register(data) {
     const { name, email, password, role, profilePic, mobileNo } = data;
-    let user = await this.Model.findOne({ email });
+    let user = await this.Model.findOne({ mobileNo });
     if (user)
       return {
         httpStatus: httpStatus.CONFLICT,
@@ -36,7 +36,6 @@ class UserService extends Service {
       { expiresIn: "7d" },
     );
     // session.set("user", user);
-
     return {
       token,
       user: {
@@ -49,8 +48,8 @@ class UserService extends Service {
   }
 
   static async login(data) {
-    const { email, password } = data;
-    const user = await this.Model.findOne({ email });
+    const { mobileNo, password } = data;
+    const user = await this.Model.findOne({ mobileNo });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return {
@@ -73,6 +72,7 @@ class UserService extends Service {
         name: user.name,
         email: user.email,
         role: user.role,
+        mobileNo:user.mobileNo
       },
     };
   }

@@ -23,19 +23,19 @@ export const getUser = asyncHandler(async function (req, res, _next) {
     return ('No token provided');
   }
   const decoded = decodeToken(token); // Decoding the token
- // You can access user data like this
- const userId = decoded.id; // This will give you the 'id' from the token payload
- const userRole = decoded.role; // This will give you the 'role' from the token payload
+  // You can access user data like this
+  const userId = decoded.id; // This will give you the 'id' from the token payload
+  const userRole = decoded.role; // This will give you the 'role' from the token payload
 
   const user = await UserService.get(userId);
-  const { password, ...userDataWithoutPassword } = user._doc; 
+  const { password, ...userDataWithoutPassword } = user._doc;
   sendResponse(httpStatus.OK, res, userDataWithoutPassword, "User fetched successfully");
 });
 
 export const register = asyncHandler(async function (req, res, _next) {
   const newUser = await UserService.register(req.body);
   const message = newUser.message || "User created successfully";
-  const data = newUser.user;
+  const data = { token: newUser.token, user: newUser.user };
   const status = newUser.httpStatus || httpStatus.CREATED;
   sendResponse(status, res, data, message);
 });
@@ -46,11 +46,11 @@ export const login = asyncHandler(async function (req, res, _next) {
   const data = authData.user;
   const token = authData.token;
   const status = authData.httpStatus || httpStatus.OK;
-  sendResponse(status, res, { token, data }, message);
+  sendResponse(status, res, { token, user: data }, message);
 });
 
 export const updateUser = asyncHandler(async function (req, res, _next) {
-  const { id } = req.params;
+  const { id } = req.params;  
   const updatedUser = await UserService.update(id, req.body);
   sendResponse(httpStatus.OK, res, updatedUser, "User updated successfully");
 });
