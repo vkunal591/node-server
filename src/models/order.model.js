@@ -8,6 +8,7 @@ const orderScherma = new BaseSchema({
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
       quantity: { type: Number, required: true },
+      name: { type: String }
     },
   ],
   totalAmount: { type: Number, required: true },

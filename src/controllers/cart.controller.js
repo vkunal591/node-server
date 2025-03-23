@@ -26,8 +26,16 @@ export const update = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, updatedDoc, "Record updated successfully");
 });
 
-export const deleteData = asyncHandler(async function (req, res, _next) { 
+export const deleteData = asyncHandler(async function (req, res, _next) {
   const { id } = req.params;
   const deletedDoc = await CartService.deleteDoc(id);
   sendResponse(httpStatus.OK, res, deletedDoc, "Record deleted successfully");
+});
+
+
+export const clearData = asyncHandler(async function (req, res, _next) {
+  const { id } = req.params;
+  console.log(id)
+  const deletedDoc = await CartService.clearCart(id);
+  sendResponse(httpStatus.OK, res, deletedDoc, "Clear cart successfully");
 });

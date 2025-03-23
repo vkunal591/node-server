@@ -8,6 +8,8 @@ const cartSchema = new BaseSchema({
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
       quantity: { type: Number, default: 1 },
+      name: { type: String },
+      price: { type: Number }
     },
   ],
 });

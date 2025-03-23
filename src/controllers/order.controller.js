@@ -10,8 +10,8 @@ export const get = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, data, "Record fetched successfully");
 });
 
-export const getAllWithUsers = asyncHandler(async function (req, res, _next) {
-  const data = await OrderService.getAllWithUsers();
+export const getMyOrders = asyncHandler(async function (req, res, _next) {
+  const data = await OrderService.getMyOrders();
   const result = {result:data}
   sendResponse(httpStatus.OK, res, result, "Orders fetched successfully with users");
 });
