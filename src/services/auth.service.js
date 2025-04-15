@@ -42,14 +42,21 @@ class UserService extends Service {
         id: user._id,
         name: user.name,
         email: user.email,
+        mobileNo: user.mobileNo,
         role: user.role,
       },
     };
   }
 
   static async login(data) {
-    const { mobileNo, password } = data;
-    const user = await this.Model.findOne({ mobileNo });
+    const { mobileNo, email, password } = data;
+    const user = await this.Model.findOne({
+      $or: [
+        { mobileNo },
+        { email }
+      ]
+    });
+    // const user = await this.Model.findOne({ mobileNo });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return {
@@ -72,7 +79,7 @@ class UserService extends Service {
         name: user.name,
         email: user.email,
         role: user.role,
-        mobileNo:user.mobileNo
+        mobileNo: user.mobileNo
       },
     };
   }
