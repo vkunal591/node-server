@@ -16,7 +16,7 @@ export const create = asyncHandler(async function (req, res, _next) {
     httpStatus.CREATED,
     res,
     createdDoc,
-    "Record created successfully",
+    "Record created successfully"
   );
 });
 
@@ -32,10 +32,17 @@ export const deleteData = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, deletedDoc, "Record deleted successfully");
 });
 
-
 export const clearData = asyncHandler(async function (req, res, _next) {
   const { id } = req.params;
-  console.log(id)
+  console.log(id);
   const deletedDoc = await CartService.clearCart(id);
   sendResponse(httpStatus.OK, res, deletedDoc, "Clear cart successfully");
+});
+
+export const getByUserId = asyncHandler(async function (req, res, _next) {
+  const { userId } = req.params;
+  const { page, limit } = req.query;
+  console.log(userId);
+  const deletedDoc = await CartService.getCartByUserId(userId, page, limit);
+  sendResponse(httpStatus.OK, res, deletedDoc, "Get cart successfully");
 });

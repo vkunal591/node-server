@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Cart from "#models/cart";
 import Service from "#services/base";
 
@@ -6,7 +7,6 @@ class CartService extends Service {
 
   static async get(id, filters = {}) {
     const { page = 1, limit = 10, ...restFilters } = filters;
-
     const skip = (page - 1) * limit;
 
     const matchStage = id
@@ -17,7 +17,6 @@ class CartService extends Service {
 
     const pipeline = [
       ...matchStage,
-
       {
         $lookup: {
           from: "users",
@@ -27,7 +26,6 @@ class CartService extends Service {
         },
       },
       { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
-
       { $unwind: { path: "$items", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
@@ -58,8 +56,6 @@ class CartService extends Service {
           updatedAt: { $first: "$updatedAt" },
         },
       },
-
-      // Pagination using facet
       {
         $facet: {
           result: [
@@ -91,13 +87,29 @@ class CartService extends Service {
     };
   }
 
+  // 🔍 Get cart by userId directly
+static async getCartByUserId(userId, page = 1, limit = 10) {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
 
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 10;
+
+  return this.get(null, {
+    user: new mongoose.Types.ObjectId(userId),
+    page: pageNum,
+    limit: limitNum,
+  });
+}
+
+
+  // ❌ Clear cart
   static async clearCart(userId) {
     if (!userId) {
       throw new Error("User ID is required");
     }
 
-    // Delete all carts associated with the user
     const result = await this.Model.deleteMany({ user: userId });
 
     if (result.deletedCount === 0) {
