@@ -8,17 +8,20 @@ class OrderService extends Service {
   static async get(id, filters = {}) {
     const {
       page = 1,
-      limit = 10,
-      ...restFilters
+        limit = 10,
+        ...restFilters
     } = filters;
 
     const skip = (page - 1) * limit;
 
-    const matchStage = id
-      ? [{ $match: { _id: new mongoose.Types.ObjectId(id) } }]
-      : Object.keys(restFilters).length
-        ? [{ $match: restFilters }]
-        : [];
+    const matchStage = id ? [{
+        $match: {
+          _id: new mongoose.Types.ObjectId(id)
+        }
+      }] :
+      Object.keys(restFilters).length ? [{
+        $match: restFilters
+      }] : [];
 
     const pipeline = [
       ...matchStage,
@@ -31,9 +34,19 @@ class OrderService extends Service {
           as: "userData",
         },
       },
-      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: {
+          path: "$userData",
+          preserveNullAndEmptyArrays: true
+        }
+      },
 
-      { $unwind: { path: "$items", preserveNullAndEmptyArrays: true } },
+      {
+        $unwind: {
+          path: "$items",
+          preserveNullAndEmptyArrays: true
+        }
+      },
       {
         $lookup: {
           from: "products",
@@ -43,30 +56,59 @@ class OrderService extends Service {
         },
       },
       {
-        $unwind: { path: "$items.productData", preserveNullAndEmptyArrays: true },
+        $unwind: {
+          path: "$items.productData",
+          preserveNullAndEmptyArrays: true
+        },
       },
       {
         $group: {
           _id: "$_id",
-          user: { $first: "$user" },
-          userName: { $first: "$userData.name" },
-          mobileNo: { $first: "$userData.mobileNo" },
-          totalAmount: { $first: "$totalAmount" },
-          status: { $first: "$status" },
+          user: {
+            $first: "$user"
+          },
+          userName: {
+            $first: "$userData.name"
+          },
+          mobileNo: {
+            $first: "$userData.mobileNo"
+          },
+          totalAmount: {
+            $first: "$totalAmount"
+          },
+          status: {
+            $first: "$status"
+          },
           items: {
             $push: {
               quantity: "$items.quantity",
               product: "$items.productData",
             },
           },
-          streetAddress: { $first: "$streetAddress" },
-          city: { $first: "$city" },
-          landMark: { $first: "$landMark" },
-          state: { $first: "$state" },
-          country: { $first: "$country" },
-          pincode: { $first: "$pincode" },
-          createdAt: { $first: "$createdAt" },
-          updatedAt: { $first: "$updatedAt" },
+          streetAddress: {
+            $first: "$streetAddress"
+          },
+          city: {
+            $first: "$city"
+          },
+          landMark: {
+            $first: "$landMark"
+          },
+          state: {
+            $first: "$state"
+          },
+          country: {
+            $first: "$country"
+          },
+          pincode: {
+            $first: "$pincode"
+          },
+          createdAt: {
+            $first: "$createdAt"
+          },
+          updatedAt: {
+            $first: "$updatedAt"
+          },
         }
 
       },
@@ -74,25 +116,36 @@ class OrderService extends Service {
       // Pagination using facet
       {
         $facet: {
-          result: [
-            { $sort: { createdAt: -1 } },
-            { $skip: skip },
-            { $limit: parseInt(limit) },
+          result: [{
+              $sort: {
+                createdAt: -1
+              }
+            },
+            {
+              $skip: skip
+            },
+            {
+              $limit: parseInt(limit)
+            },
           ],
-          totalCount: [
-            { $count: "count" }
-          ]
+          totalCount: [{
+            $count: "count"
+          }]
         }
       },
       {
         $addFields: {
-          totalItems: { $arrayElemAt: ["$totalCount.count", 0] },
+          totalItems: {
+            $arrayElemAt: ["$totalCount.count", 0]
+          },
         }
       },
     ];
 
     const aggResult = await this.Model.aggregate(pipeline);
-    const { result = [], totalItems = 0 } = aggResult[0] || {};
+    const {
+      result = [], totalItems = 0
+    } = aggResult[0] || {};
 
     return {
       result,
@@ -105,13 +158,17 @@ class OrderService extends Service {
     };
   }
 
+  // ✅ FIXED getMyOrders to use the same aggregation
   static async getMyOrders(userId, filters = {}) {
-    if (!userId) {
-      throw new Error("User ID is required");
-    }
+    if (!userId) throw new Error("User ID is required");
 
-    return await this.get(null, { ...filters, user: userId });
+    // Just call `get()` with user filter
+    return await this.get(null, {
+      ...filters,
+      user: new mongoose.Types.ObjectId(userId)
+    });
   }
+
 }
 
 export default OrderService;
