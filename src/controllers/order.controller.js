@@ -11,7 +11,9 @@ export const get = asyncHandler(async function (req, res, _next) {
 });
 
 export const getMyOrders = asyncHandler(async function (req, res, _next) {
-  const data = await OrderService.getMyOrders();
+  const { id } = req.params;
+  const filter = req.query;
+  const data = await OrderService.getMyOrders(id,filter);
   const result = {result:data}
   sendResponse(httpStatus.OK, res, result, "Orders fetched successfully with users");
 });
