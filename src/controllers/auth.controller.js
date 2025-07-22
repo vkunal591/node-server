@@ -63,8 +63,8 @@ export const getAllUser = asyncHandler(async function (req, res, _next) {
 
 
 export const sendPassword = async (req, res) => {
-  const { email, phone } = req.body;
-  const identifier = email || phone;
+  const { email, mobileNo } = req.body;
+  const identifier = email || mobileNo;
 
   if (!identifier) {
     return res.status(400).json({ message: "Email or phone is required" });

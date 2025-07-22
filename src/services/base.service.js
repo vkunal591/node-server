@@ -12,7 +12,7 @@ class Service {
     if (!id) {
       return await this.Model.findAll(filters);
     }
-    return await this.Model.findDocById(id);
+    return await this.Model.findDocById(id);    
   }
 
   static async getDocById(id, allowNull = false) {

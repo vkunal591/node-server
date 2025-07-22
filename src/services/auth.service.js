@@ -59,7 +59,7 @@ class UserService extends Service {
       ]
     });
     // const user = await this.Model.findOne({ mobileNo });
-
+    console.log(await bcrypt.compare(password, user.password), password, user.password, user)
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return {
         httpStatus: httpStatus.UNAUTHORIZED,
@@ -91,7 +91,7 @@ class UserService extends Service {
     const user = await this.Model.findOne({
       $or: [{ email: identifier }, { mobileNo: identifier }],
     });
-
+    console.log(mobileNo)
     if (!user) {
       return {
         httpStatus: httpStatus.NOT_FOUND,
