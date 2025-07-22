@@ -10,6 +10,8 @@ export const get = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, data, "Record fetched successfully");
 });
 
+
+
 export const create = asyncHandler(async function (req, res, _next) {
   const createdDoc = await ContactService.create(req.body);
   sendResponse(

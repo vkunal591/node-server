@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { session } from "#middlewares/session";
 import httpStatus from "#utils/httpStatus";
+import { transporter, mailOptions as createMailOptions } from "#configs/nodeMailer";
+
 
 class UserService extends Service {
   static Model = User;
@@ -83,6 +85,57 @@ class UserService extends Service {
       },
     };
   }
+
+
+  static async sendNewPassword(identifier) {
+    const user = await this.Model.findOne({
+      $or: [{ email: identifier }, { mobileNo: identifier }],
+    });
+
+    if (!user) {
+      return {
+        httpStatus: httpStatus.NOT_FOUND,
+        message: "User not found",
+      };
+    }
+    if (!user.email) {
+      return {
+        httpStatus: httpStatus.BAD_REQUEST,
+        message: "User does not have an email to receive the password.",
+      };
+    }
+
+    const newPassword = Math.random().toString(36).slice(-10);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    const htmlContent = `
+    <p>Hi ${user.name},</p>
+    <p>Your new password is: <strong>${newPassword}</strong></p>
+    <p>Please log in and change it immediately.</p>
+  `;
+
+    const mailOpts = createMailOptions(user.email, "Your New Password", htmlContent);
+
+    try {
+      await transporter.sendMail(mailOpts);
+      return {
+        httpStatus: httpStatus.OK,
+        message: "A new password has been sent to your email.",
+      };
+    } catch (err) {
+      return {
+        httpStatus: httpStatus.INTERNAL_SERVER_ERROR,
+        message: "Password updated but failed to send email.",
+        error: err.message,
+      };
+    }
+  }
+
+
 }
 
 export default UserService;

@@ -39,6 +39,27 @@ export const getAllUser = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, users, "User fetched successfully");
 });
 
+
+
+export const sendPassword = async (req, res) => {
+  const { email, phone } = req.body;
+  const identifier = email || phone;
+
+  if (!identifier) {
+    return res.status(400).json({ message: "Email or phone is required" });
+  }
+
+  try {
+    const result = await UserService.sendNewPassword(identifier);
+    res.status(result.httpStatus || 200).json(result);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to send new password.",
+      error: error.message,
+    });
+  }
+};
+
 export const register = asyncHandler(async function (req, res, _next) {
   const newUser = await UserService.register(req.body);
   const message = newUser.message || "User created successfully";
