@@ -27,9 +27,16 @@ export const getUser = asyncHandler(async function (req, res, _next) {
   const userId = decoded.id; // This will give you the 'id' from the token payload
   const userRole = decoded.role; // This will give you the 'role' from the token payload
 
-  const user = await UserService.get(userId);
+  const user = await UserService.get();
   const { password, ...userDataWithoutPassword } = user._doc;
   sendResponse(httpStatus.OK, res, userDataWithoutPassword, "User fetched successfully");
+});
+
+export const getAllUser = asyncHandler(async function (req, res, _next) {
+  const { id } = req.params;
+
+  const users = await UserService.get(id);
+  sendResponse(httpStatus.OK, res, users, "User fetched successfully");
 });
 
 export const register = asyncHandler(async function (req, res, _next) {
@@ -50,7 +57,7 @@ export const login = asyncHandler(async function (req, res, _next) {
 });
 
 export const updateUser = asyncHandler(async function (req, res, _next) {
-  const { id } = req.params;  
+  const { id } = req.params;
   const updatedUser = await UserService.update(id, req.body);
   sendResponse(httpStatus.OK, res, updatedUser, "User updated successfully");
 });
