@@ -32,12 +32,33 @@ export const getUser = asyncHandler(async function (req, res, _next) {
   sendResponse(httpStatus.OK, res, userDataWithoutPassword, "User fetched successfully");
 });
 
+
 export const getAllUser = asyncHandler(async function (req, res, _next) {
   const { id } = req.params;
-
   const users = await UserService.get(id);
-  sendResponse(httpStatus.OK, res, users, "User fetched successfully");
+
+  // Normalize users to an array (if needed)
+  const dataArray = Array.isArray(users) ? users : [users];
+
+  const cleanedData = dataArray.map(item => {
+    if (!item || !Array.isArray(item.result)) return item;
+
+    // Remove password from each user in result
+    const sanitizedResult = item.result.map(user => {
+      const userObj = user.toJSON ? user.toJSON() : { ...user };
+      delete userObj.password;
+      return userObj;
+    });
+
+    return {
+      ...item,
+      result: sanitizedResult
+    };
+  });
+
+  sendResponse(httpStatus.OK, res, cleanedData, "User fetched successfully");
 });
+
 
 
 
