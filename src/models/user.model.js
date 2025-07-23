@@ -14,7 +14,7 @@ const userSchema = new BaseSchema({
   role: {
     type: String,
     enum: ["user", "admin"],
-    default: "admin",
+    default: "user",
   },
   profilePic: {
     type: String,
